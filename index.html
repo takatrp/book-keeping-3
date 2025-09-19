@@ -1,359 +1,535 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>漢検3級トレーナー r4.1（読み・送り仮名・部首／CSV強化）</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>簿記の仕訳トレーナー r3（3級専用）</title>
+<meta name="description" content="日商簿記3級 専用の仕訳トレーニング。日常仕訳＋基本の決算整理。許容勘定科目に準拠。練習/本番テスト、制限時間、スコア保存、CSV出力対応。">
 <style>
-:root{--accent:#578899}
-*{box-sizing:border-box}
-body{font-family:system-ui,-apple-system,"Noto Sans JP",Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:#f7f9fb;color:#222}
-header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e9ef;padding:10px 12px;z-index:5}
-h1{font-size:18px;margin:0;color:var(--accent)}
-.wrap{max-width:860px;margin:0 auto;padding:14px}
-.card{background:#fff;border:1px solid #e5e9ef;border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.row>*{flex:1 1 200px}
-select,button,input{font-size:16px;padding:10px;border-radius:10px;border:1px solid #cfd8e3;background:#fff}
-button.primary{background:var(--accent);color:#fff;border:none}
-button.ghost{background:#f2f5f8}
-.q-main{font-size:42px;text-align:center;letter-spacing:.04em;margin:8px 0}
-.q-sub{opacity:.8;text-align:center;font-size:14px}
-.ans{display:flex;gap:8px;margin-top:8px}
-.muted{opacity:.75}
-.pill{display:inline-block;border:1px solid #d8e2ee;border-radius:999px;padding:4px 10px;font-size:12px;margin-right:6px;background:#f7fbff}
-.stats{display:flex;gap:8px;flex-wrap:wrap}
-.stats .pill{background:#eef5f9}
-.big{font-size:20px}
-.good{color:#0a7a3c}
-.bad{color:#a32626}
-.center{text-align:center}
-.foot{font-size:12px;opacity:.7;text-align:center;margin:8px 0}
-.hidden{display:none}
-.tag{font-size:11px;border:1px solid #d8e2ee;border-radius:6px;padding:2px 6px;margin-left:6px}
-.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-.progress{height:8px;border-radius:999px;background:#e8eef6;overflow:hidden}
-.progress>i{display:block;height:100%;background:var(--accent);width:0%}
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.choice{border:1px solid #cfd8e3;border-radius:10px;padding:10px;text-align:center;background:#fff}
-.choice.sel{outline:3px solid var(--accent)}
-label.small{font-size:12px;opacity:.8}
-.badge{background:#fff3cd;border:1px solid #ffe69c}
-kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:#eef;padding:0 6px;border-radius:4px;border:1px solid #dde}
+  :root{
+    --brand:#578899;
+    --bg:#f8fbfd;
+    --ink:#1f2937;
+    --muted:#6b7785;
+    --ok:#2b8a3e;
+    --ng:#c92a2a;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --chip:#eef5f9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue","Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",YuGothic,sans-serif; line-height:1.6}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,var(--card),#f6f9fb);border-bottom:1px solid var(--border)}
+  .wrap{max-width:860px;margin:0 auto;padding:10px 14px}
+  h1{font-size:1.3rem;margin:4px 0;color:var(--brand)}
+  .subtitle{font-size:.9rem;color:var(--muted);margin-top:-2px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .col{flex:1 1 160px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:.2rem .6rem;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--muted);font-size:.8rem}
+  .btn{border:none;padding:11px 14px;border-radius:12px;font-size:1rem;background:var(--brand);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.06);cursor:pointer}
+  .btn.ghost{background:#eef5f9;color:var(--brand)}
+  .btn.line{background:#fff;border:1px solid var(--border);color:var(--ink)}
+  .btn.sm{font-size:.9rem;padding:8px 10px;border-radius:10px}
+  label{display:block;font-size:.9rem;color:var(--muted);margin:8px 0 4px}
+  select,input[type="number"],input[type="text"]{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);font-size:1rem;background:#fff}
+  .status{font-size:.95rem;margin-top:8px}
+  .ok{color:var(--ok);font-weight:600}
+  .ng{color:var(--ng);font-weight:600}
+  .tacc{overflow:auto;border:1px solid var(--border);border-radius:12px}
+  table{border-collapse:collapse;width:100%;min-width:560px}
+  th,td{border-bottom:1px solid var(--border);padding:6px 8px;text-align:right;font-variant-numeric: tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  .muted{color:var(--muted)}
+  .badge{background:#fff;border:1px solid var(--border);padding:.2rem .5rem;border-radius:8px;margin-left:.3rem}
+  .klink a{color:var(--brand);text-decoration:none}
+  .chip{display:inline-block;background:var(--chip);border:1px solid var(--border);padding:.2rem .5rem;border-radius:8px;font-size:.8rem;margin-right:.3rem}
+  .timer{font-weight:700}
+  .foot{font-size:.75rem;color:var(--muted);text-align:center;margin:24px 0}
+  .stickybar{position:sticky;bottom:0;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.0),rgba(255,255,255,.8) 30%,#fff);padding:8px 0}
+  .center{text-align:center}
 </style>
 </head>
 <body>
 <header>
-  <h1>漢検3級トレーナー <span class="tag">r4.1</span> <span class="tag">読み・送り仮名・部首</span></h1>
+  <div class="wrap">
+    <h1>簿記の仕訳トレーナー <span class="badge">r3｜3級</span></h1>
+    <div class="subtitle">対象：日商簿記3級｜範囲：日常仕訳＋基本の決算整理｜科目：許容勘定科目に準拠</div>
+  </div>
 </header>
 
-<div class="wrap">
-  <div class="card">
-    <div class="row">
-      <div>
-        <label>学習モード</label><br>
+<main class="wrap">
+  <section class="card" id="mode-card">
+    <div class="row" style="align-items:flex-end">
+      <div class="col" style="flex:1 1 220px">
+        <label>モード</label>
         <select id="mode">
-          <option value="yomi">読み（かな入力）</option>
-          <option value="okuri">送り仮名（選択）</option>
-          <option value="bushu">部首名（入力）</option>
+          <option value="practice">練習モード（無制限）</option>
+          <option value="exam">本番テスト</option>
         </select>
       </div>
-      <div>
-        <label>出題範囲</label><br>
-        <select id="range">
-          <option value="all">全データ</option>
-          <option value="new">苦手重点（Box1）</option>
-          <option value="srs1">SRS Box1</option>
-          <option value="srs2">SRS Box2</option>
-          <option value="srs3">SRS Box3</option>
+      <div class="col">
+        <label>問題数（本番テスト）</label>
+        <select id="examCount">
+          <option>20</option>
+          <option>30</option>
+          <option selected>40</option>
         </select>
       </div>
-      <div class="center">
-        <label>&nbsp;</label><br>
-        <button class="primary" id="nextBtn">次の問題</button>
+      <div class="col">
+        <label>制限時間（分）</label>
+        <select id="timeLimit">
+          <option>15</option>
+          <option>30</option>
+          <option selected>60</option>
+        </select>
       </div>
     </div>
-    <div class="stats">
-      <span class="pill">本日 <b id="todayCnt">0</b></span>
-      <span class="pill">正答率 <b id="acc">0%</b></span>
-      <span class="pill">連続正解 <b id="streak">0</b></span>
-      <span class="pill">学習中 <b id="deckSize">0</b></span>
+    <div class="row" style="margin-top:8px">
+      <div class="pill">正解: <b id="okCount">0</b></div>
+      <div class="pill">不正解: <b id="ngCount">0</b></div>
+      <div class="pill">正答率: <b id="rate">-</b></div>
+      <div class="pill">進捗: <b id="progress">0/0</b></div>
+      <div class="pill">タイマー: <span class="timer" id="timer">--:--</span></div>
     </div>
-    <div class="progress"><i id="progBar"></i></div>
-    <div class="muted mono" id="status"></div>
-  </div>
-
-  <div class="card" id="qCard">
-    <div class="q-main" id="qMain">—</div>
-    <div class="q-sub" id="qSub">モードに応じた指示が表示されます</div>
-
-    <div id="choiceBox" class="choices hidden"></div>
-
-    <div class="ans" id="ansBox">
-      <input id="answer" placeholder="ここに解答（かな／部首名）" autocomplete="off" inputmode="kana">
-      <button id="submitBtn" class="primary">答える</button>
-      <button id="revealBtn" class="ghost">ヒント/答え</button>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="startBtn">スタート</button>
+      <button class="btn ghost" id="nextBtn">次の問題</button>
+      <button class="btn line" id="checkBtn">採点</button>
+      <button class="btn line" id="showBtn">正解を見る</button>
+      <button class="btn line" id="recordBtn">仕訳帳に記録</button>
+      <button class="btn line" id="finishBtn">終了・成績表</button>
+      <button class="btn sm line" id="resetBtn">リセット</button>
     </div>
-    <div id="feedback" class="center muted" style="margin-top:8px"></div>
-  </div>
+  </section>
 
-  <div class="card">
+  <section class="card" id="problem-card">
+    <div class="muted" style="font-size:.85rem">問題（3級｜日常＋決算整理）</div>
+    <div id="question" style="font-size:1.05rem;font-weight:600;margin:4px 0 6px">—</div>
     <div class="row">
-      <div>
-        <button id="examBtn" class="ghost">検定モード（40問・200点満点）</button><br>
-        <label class="small muted">合格目安：70%（140点）</label>
+      <div class="col">
+        <label>借方 勘定科目</label>
+        <select id="debitAcc"></select>
       </div>
-      <div>
-        <label class="muted">データ読み込み（JSON/CSV/TSV対応）</label><br>
-        <input type="file" id="fileInput" accept=".json,.csv,.tsv,.txt">
+      <div class="col">
+        <label>貸方 勘定科目</label>
+        <select id="creditAcc"></select>
       </div>
-      <div class="center">
-        <button id="resetBtn">進捗リセット</button>
+      <div class="col">
+        <label>金額（円）</label>
+        <input id="amount" type="number" inputmode="numeric" placeholder="例：100000">
       </div>
     </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="card" id="explain" style="display:none">
+    <div class="muted">解説</div>
+    <div id="explainBody">—</div>
+    <div class="klink" style="margin-top:8px">
+      <span class="chip">根拠リンク：</span>
+      <a href="https://links.kentei.ne.jp/competition/assets/pdf/kubun1.pdf" target="_blank" rel="noopener">出題区分表（商業簿記・会計学 3級）</a> ／
+      <a href="https://www.kentei.ne.jp/wp/wp-content/uploads/2019/02/2019_kamoku.pdf" target="_blank" rel="noopener">商業簿記 標準・許容勘定科目表（2・3級）</a> ／
+      <a href="https://career.jusnet.co.jp/keiri_work/2/02.php" target="_blank" rel="noopener">仕訳の基本（入門）</a>
+    </div>
+  </section>
+
+  <section class="card">
     <details>
-      <summary>CSV仕様（500問パック用）</summary>
-      <pre class="mono" style="white-space:pre-wrap">
-type,kanji,readings,okuri_choices,okuri_ans,bushu,ex
-# 例（読み） readingsは「|」区切り。区切りに「、／/」を書いても自動で「|」に正規化。
-yomi,境内,けいだい,,,,
-# 例（送り仮名） 選択肢は「|」区切り。okuri_ans は必ず choices のいずれかと完全一致。
-okuri,受け,,受け入れ|受入れ|受入,受け入れ,,
-# 例（部首）
-bushu,体,"",,,"にんべん",</pre>
-      <div class="muted">※ ヘッダは自動認識。TSVも可。エンコードはUTF-8推奨。</div>
+      <summary><b>3級の主な許容勘定科目（抜粋｜標準＋許容）</b></summary>
+      <div class="tacc" style="margin-top:8px">
+        <table>
+          <thead><tr><th>科目</th><th>区分</th><th>通常残高</th><th>備考</th></tr></thead>
+          <tbody id="cheats"></tbody>
+        </table>
+      </div>
+      <div class="muted" style="margin-top:4px">※ 正式名称・許容語は上記PDFをご参照ください。問題文の指示がある場合はそちらを優先。</div>
     </details>
-    <div class="muted mono" id="miniLog"></div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary><b>仕訳帳（自分の回答を保存）</b></summary>
+      <div class="tacc" style="margin-top:8px">
+        <table id="journalTable">
+          <thead><tr><th>日付</th><th>モード</th><th>摘要</th><th>借方</th><th>金額</th><th>貸方</th><th>金額</th></tr></thead>
+          <tbody id="journalBody"></tbody>
+        </table>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn sm line" id="exportJournal">仕訳帳CSV</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="card">
+    <details open>
+      <summary><b>成績表・履歴（ブラウザ保存）</b></summary>
+      <div class="tacc" style="margin-top:8px">
+        <table id="histTable">
+          <thead><tr><th>日時</th><th>モード</th><th>問題数</th><th>正解</th><th>不正解</th><th>正答率</th><th>所要時間</th></tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn sm line" id="exportHist">履歴CSV</button>
+        <button class="btn sm line" id="clearHist">履歴クリア</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary><b>T勘定（学習用・簡易）</b></summary>
+      <div class="tacc" style="margin-top:8px">
+        <table id="tTable">
+          <thead><tr><th>科目</th><th>借方合計</th><th>貸方合計</th><th>差額（借方−貸方）</th></tr></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <div class="stickybar">
+    <div class="wrap" style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="pill">対象：3級</span>
+      <span class="pill">範囲：日常仕訳＋基本の決算整理</span>
+      <span class="pill">カラー：#578899</span>
+      <span class="pill">© 仕訳トレーナー r3</span>
+    </div>
   </div>
 
-  <div class="foot">
-    © Matsumoto Kaikei / Kanken3 r4.1（SRS保存・CSV差替） — 参照規範：送り仮名の付け方／常用漢字表／KANJIDIC2（帰属要）
-  </div>
-</div>
+  <div class="foot">© 簿記の仕訳トレーナー r3 / 教材用途</div>
+</main>
 
 <script>
-/*** ---------- SRS／進捗 ---------- ***/
-const SRS_KEY="kanken3_srs_r41"; const STATS_KEY="kanken3_stats_r41";
-function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
-function loadSRS(){ try{return JSON.parse(localStorage.getItem(SRS_KEY))||{}}catch(e){return{}} }
-function saveSRS(s){ localStorage.setItem(SRS_KEY, JSON.stringify(s)); }
-function loadStats(){ try{return JSON.parse(localStorage.getItem(STATS_KEY))||{r:0,w:0,st:0,td:0,date:todayStr()}}catch(e){return{r:0,w:0,st:0,td:0,date:todayStr()}} }
-function saveStats(s){ localStorage.setItem(STATS_KEY, JSON.stringify(s)); }
-let SRS=loadSRS(), ST=loadStats(); if(ST.date!==todayStr()){ ST.td=0; ST.date=todayStr(); saveStats(ST); }
+// ===== 基本データ（3級専用） =====
+// 勘定タイプ: A=資産 L=負債 E=純資産 R=収益 X=費用
+const accounts = [
+  // 資産（標準・許容から代表例）
+  {name:"現金", type:"A"}, {name:"当座預金", type:"A"}, {name:"普通預金", type:"A"},
+  {name:"売掛金", type:"A"}, {name:"受取手形", type:"A"}, {name:"有価証券", type:"A"},
+  {name:"商品", type:"A"}, {name:"繰越商品", type:"A"},
+  {name:"前払費用", type:"A"}, {name:"未収収益", type:"A"},
+  {name:"仮払金", type:"A"}, {name:"立替金", type:"A"},
+  {name:"備品", type:"A"}, {name:"車両運搬具", type:"A"},
+  {name:"減価償却累計額", type:"A"}, // 評価勘定（貸方残）
+  {name:"消耗品", type:"A"},
 
-/*** ---------- 要素参照 ---------- ***/
-const $=id=>document.getElementById(id);
-const els={mode:$('mode'), range:$('range'), next:$('nextBtn'),
-  qMain:$('qMain'), qSub:$('qSub'), ans:$('answer'),
-  sub:$('submitBtn'), rev:$('revealBtn'), fb:$('feedback'),
-  acc:$('acc'), streak:$('streak'), deck:$('deckSize'),
-  today:$('todayCnt'), prog:$('progBar'), log:$('miniLog'),
-  exam:$('examBtn'), file:$('fileInput'), reset:$('resetBtn'),
-  stat:$('status'), choice:$('choiceBox'), ansBox:$('ansBox')
-};
-function updateHUD(){
-  const total=ST.r+ST.w||1;
-  els.acc.textContent=Math.round(100*ST.r/total)+'%';
-  els.streak.textContent=ST.st;
-  els.today.textContent=ST.td;
-  els.deck.textContent=DATA.length;
-  els.prog.style.width=Math.min(100, Math.round((ST.r+ST.w)/Math.max(80,DATA.length)*100))+'%';
-}
-updateHUD();
+  // 負債
+  {name:"買掛金", type:"L"}, {name:"支払手形", type:"L"},
+  {name:"借入金", type:"L"}, {name:"未払金", type:"L"},
+  {name:"前受金", type:"L"}, {name:"前受収益", type:"L"},
+  {name:"未払費用", type:"L"},
+  {name:"仮受金", type:"L"},
+  {name:"貸倒引当金", type:"L"},
 
-/*** ---------- 出題エンジン ---------- ***/
-let cur=null, exam=false, left=0, score=0;
-function boxOf(id){ return SRS[id]?.box ?? 1 }
-function bump(id,ok){ const b=boxOf(id); SRS[id]={box: ok? Math.min(3,b+1):1, last:Date.now()}; saveSRS(SRS); }
-function poolByRange(){
-  let pool = DATA.map((d,i)=>({...d,__id:i}));
-  const rg=els.range.value;
-  if(rg==='srs1'||rg==='srs2'||rg==='srs3'){ const t=Number(rg.slice(3)); pool=pool.filter(d=>boxOf(d.__id)===t); }
-  else if(rg==='new'){ pool=pool.filter(d=>boxOf(d.__id)===1); }
-  if(pool.length===0) pool = DATA.map((d,i)=>({...d,__id:i}));
-  return pool.map(p=>({p,w:(4-boxOf(p.__id))})); // Box1重め
-}
-function pick(){
-  const pool=poolByRange(); const sum=pool.reduce((a,c)=>a+c.w,0)||1;
-  let r=Math.random()*sum; for(const it of pool){ if((r-=it.w)<=0) return it.p; }
-  return pool[0].p;
-}
+  // 純資産（個人）
+  {name:"元入金", type:"E"},
 
-/*** ---------- 出題描画 ---------- ***/
-function setQuestion(){
-  const mode=els.mode.value;
-  // モードに該当するデータがない場合のガード
-  if(!DATA.some(d=>d.type===mode)){
-    els.qMain.textContent='データがありません';
-    els.qSub.textContent='このモードの行（type='+mode+'）がCSVに含まれているか確認してください';
-    els.answer?.focus(); return;
-  }
-  cur=pick(); els.ans.value=""; els.fb.textContent=""; els.choice.classList.add('hidden'); els.ansBox.classList.remove('hidden');
-  if(mode==='yomi'){
-    const base=(cur.type==='yomi'?cur:pickType('yomi'));
-    els.qMain.textContent=base.kanji||'—'; els.qSub.textContent='読み（かな）を入力'; cur=base;
-  }else if(mode==='okuri'){
-    const base=(cur.type==='okuri'?cur:pickType('okuri'));
-    els.qMain.textContent = `${base.kanji}（送り仮名）`;
-    els.qSub.textContent='正しい表記を選択';
-    showChoices(shuffle(base.okuri_choices)); cur=base;
-  }else if(mode==='bushu'){
-    const base=(cur.type==='bushu'?cur:pickType('bushu'));
-    els.qMain.textContent=base.kanji; els.qSub.textContent='部首名を入力（例：にんべん／てへん／さんずい…）'; cur=base;
-  }
-  els.ans.focus();
-}
-function pickType(t){ const list=DATA.map((d,i)=>({...d,__id:i})).filter(d=>d.type===t); return list.length? list[Math.floor(Math.random()*list.length)] : {type:t,kanji:"（データ不足）"}; }
+  // 収益
+  {name:"売上", type:"R"}, {name:"売上戻り高", type:"R"},
+  {name:"受取利息", type:"R"}, {name:"受取手数料", type:"R"}, {name:"雑収入", type:"R"},
+  {name:"受取家賃", type:"R"},
 
-/*** ---------- 選択肢UI ---------- ***/
-function showChoices(arr){
-  els.choice.innerHTML=''; els.choice.classList.remove('hidden'); els.ansBox.classList.add('hidden');
-  arr.forEach((c)=>{
-    const btn=document.createElement('button'); btn.type='button'; btn.className='choice'; btn.textContent=c;
-    btn.onclick=()=>{ document.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel')); btn.classList.add('sel'); check(c); };
-    els.choice.appendChild(btn);
+  // 費用
+  {name:"仕入", type:"X"},
+  {name:"発送費", type:"X"}, // 荷造運賃
+  {name:"給料手当", type:"X"}, {name:"水道光熱費", type:"X"}, {name:"支払家賃", type:"X"},
+  {name:"支払利息", type:"X"}, {name:"減価償却費", type:"X"},
+  {name:"貸倒損失", type:"X"}, {name:"貸倒引当金繰入", type:"X"},
+  {name:"旅費交通費", type:"X"}, {name:"通信費", type:"X"},
+  {name:"消耗品費", type:"X"}
+];
+
+// チートシート（抜粋）
+const cheatRows = [
+  ["現金","資産","借方残","もっとも流動性の高い資産"],
+  ["当座預金","資産","借方残","小切手・手形決済用"],
+  ["普通預金","資産","借方残","銀行預金"],
+  ["売掛金","資産","借方残","掛販売の未収金"],
+  ["受取手形","資産","借方残","受け取った約束手形"],
+  ["商品","資産","借方残","棚卸資産（三分法を前提）"],
+  ["繰越商品","資産","借方残","決算整理で使用（期首・期末）"],
+  ["前払費用","資産","借方残","費用の繰延（保険料・家賃など）"],
+  ["未収収益","資産","借方残","収益の見越（受取利息など）"],
+  ["買掛金","負債","貸方残","掛仕入の未払"],
+  ["支払手形","負債","貸方残","振出手形の債務"],
+  ["未払費用","負債","貸方残","費用の見越（支払利息など）"],
+  ["前受金/前受収益","負債","貸方残","収益の繰延（受取家賃など）"],
+  ["貸倒引当金","負債","貸方残","売掛金等の評価性引当金"],
+  ["元入金","純資産","貸方残","個人企業の資本"],
+  ["売上","収益","貸方残","商品販売による収益"],
+  ["受取利息","収益","貸方残","預金利息等"],
+  ["受取家賃","収益","貸方残","家賃収入"],
+  ["仕入","費用","借方残","三分法の売上原価要素"],
+  ["発送費","費用","借方残","荷造運賃等"],
+  ["給料手当","費用","借方残","人件費"],
+  ["減価償却費","費用","借方残","固定資産の費用配分"],
+  ["貸倒損失","費用","借方残","回収不能の損失"],
+  ["貸倒引当金繰入","費用","借方残","引当金の当期繰入"],
+  ["消耗品/消耗品費","資産/費用","—","決算整理で振替あり"],
+];
+
+// 出題（3級・日常＋決算整理）
+const pool = [
+  // 日常
+  { tag:"daily", q:"現金で商品を販売し、代金 100,000 円を受け取った。", d:"現金", c:"売上", a:100000, exp:"資産の増加→借方、収益の増加→貸方。" },
+  { tag:"daily", q:"商品 200,000 円を掛けで販売した。", d:"売掛金", c:"売上", a:200000, exp:"売掛金（資産）増→借方、売上（収益）増→貸方。" },
+  { tag:"daily", q:"商品 150,000 円を現金で仕入れた。", d:"仕入", c:"現金", a:150000, exp:"仕入（費用）増→借方、現金（資産）減→貸方。" },
+  { tag:"daily", q:"商品 120,000 円を掛けで仕入れた。", d:"仕入", c:"買掛金", a:120000, exp:"仕入（費用）増→借方、買掛金（負債）増→貸方。" },
+  { tag:"daily", q:"掛け先から売掛金 200,000 円の入金を普通預金で受け取った。", d:"普通預金", c:"売掛金", a:200000, exp:"普通預金（資産）増、売掛金（資産）減。" },
+  { tag:"daily", q:"仕入先へ 10,000 円分の返品を行い、買掛金と相殺した。", d:"買掛金", c:"仕入", a:10000, exp:"買掛金（負債）減→借方、仕入（費用）減→貸方。" },
+  { tag:"daily", q:"備品 300,000 円を現金で購入した。", d:"備品", c:"現金", a:300000, exp:"備品（資産）増、現金（資産）減。" },
+  { tag:"daily", q:"水道光熱費 12,000 円を普通預金から支払った。", d:"水道光熱費", c:"普通預金", a:12000, exp:"費用の増加→借方、資産の減少→貸方。" },
+  { tag:"daily", q:"金融機関から 1,000,000 円を借入れ、現金で受け取った。", d:"現金", c:"借入金", a:1000000, exp:"資産増と負債増。" },
+  { tag:"daily", q:"受取利息 1,000 円を現金で受け取った。", d:"現金", c:"受取利息", a:1000, exp:"資産増と収益増。" },
+  { tag:"daily", q:"売掛金 10,000 円が貸倒れとなった。", d:"貸倒損失", c:"売掛金", a:10000, exp:"費用増と資産減。" },
+  { tag:"daily", q:"発送費 3,000 円を現金で支払った。", d:"発送費", c:"現金", a:3000, exp:"費用増と資産減。" },
+  { tag:"daily", q:"従業員へ仮払金 5,000 円を現金で渡した。", d:"仮払金", c:"現金", a:5000, exp:"資産の振替（資産増と資産減）。" },
+
+  // 決算整理（基本）
+  { tag:"closing", q:"備品の当期分減価償却 10,000 円を計上する。", d:"減価償却費", c:"減価償却累計額", a:10000, exp:"費用計上と評価勘定（累計額）の増加。" },
+  { tag:"closing", q:"当期の受取利息のうち、まだ受け取っていない 2,000 円を見越計上する。", d:"未収収益", c:"受取利息", a:2000, exp:"収益の見越：資産増・収益増。" },
+  { tag:"closing", q:"当期の支払利息のうち、まだ支払っていない 2,000 円を見越計上する。", d:"支払利息", c:"未払費用", a:2000, exp:"費用の見越：費用増・負債増。" },
+  { tag:"closing", q:"前払していた家賃 60,000 円のうち、当期の費用に該当する 20,000 円を振替える。", d:"支払家賃", c:"前払費用", a:20000, exp:"費用の繰延の取り崩し：費用増・資産減。" },
+  { tag:"closing", q:"受け取っていた手付金（家賃） 30,000 円のうち、当期分 10,000 円を収益に振替える。", d:"前受収益", c:"受取家賃", a:10000, exp:"収益の繰延の取り崩し：負債減・収益増。" },
+  { tag:"closing", q:"期首商品繰越 80,000 円を取り崩す（三分法）。", d:"仕入", c:"繰越商品", a:80000, exp:"期首繰越の戻し仕訳：原価へ振替。" },
+  { tag:"closing", q:"期末商品繰越 100,000 円を計上する（三分法）。", d:"繰越商品", c:"仕入", a:100000, exp:"期末在庫計上：資産計上と原価減少。" },
+  { tag:"closing", q:"期末に未使用の消耗品 5,000 円がある。期中は消耗品費で処理していたため振替える。", d:"消耗品", c:"消耗品費", a:5000, exp:"費用の繰延（資産計上）。" },
+  { tag:"closing", q:"売掛金に対して貸倒引当金 3,000 円を設定する（繰入）。", d:"貸倒引当金繰入", c:"貸倒引当金", a:3000, exp:"評価性引当金の設定：費用計上と負債（評価）増。" }
+];
+
+// 参照：タイプ説明（ヒント用に使用可能）
+const mapType = {A:"資産",L:"負債",E:"純資産",R:"収益",X:"費用"};
+
+// ===== 変数 =====
+let current = null;
+let ok = 0, ng = 0, answered = 0;
+let mode = "practice";
+let examRemaining = 0;
+let examTotal = 0;
+let startTime = null;
+let timerId = null;
+const ledger = {};
+
+// ===== 要素 =====
+const modeSel = document.getElementById('mode');
+const examCountSel = document.getElementById('examCount');
+const timeLimitSel = document.getElementById('timeLimit');
+const okEl = document.getElementById('okCount');
+const ngEl = document.getElementById('ngCount');
+const rateEl = document.getElementById('rate');
+const progressEl = document.getElementById('progress');
+const timerEl = document.getElementById('timer');
+const qEl = document.getElementById('question');
+const debitSel = document.getElementById('debitAcc');
+const creditSel = document.getElementById('creditAcc');
+const amountInp = document.getElementById('amount');
+const statusEl = document.getElementById('status');
+const explainBox = document.getElementById('explain');
+const explainBody = document.getElementById('explainBody');
+const journalBody = document.getElementById('journalBody');
+const tBody = document.getElementById('tBody');
+const histBody = document.getElementById('histBody');
+
+// ===== 初期化 =====
+function fillSelect(sel){
+  sel.innerHTML="";
+  accounts.forEach(acc=>{
+    const opt = document.createElement('option');
+    opt.value = acc.name; opt.textContent = acc.name; sel.appendChild(opt);
   });
 }
+fillSelect(debitSel); fillSelect(creditSel);
 
-/*** ---------- 判定 ---------- ***/
-// カタカナ→ひらがな（修正版 -0x60）、空白除去
-function normKana(s){ return (s||'').trim().replace(/\s+/g,'').replace(/[ァ-ン]/g, ch=>String.fromCharCode(ch.charCodeAt(0)-0x60)); }
-const BUSHU_SYNONYM = new Map([
-  ['にんべん',['にんべん','イ偏','イへん','亻']],
-  ['てへん',['てへん','手偏','扌']],
-  ['さんずい',['さんずい','氵']],
-  ['きへん',['きへん','木偏']],
-  ['くさかんむり',['くさかんむり','艹']],
-  ['かねへん',['かねへん','金偏','釒']],
-  ['くちへん',['くちへん','口偏']],
-  ['りっしんべん',['りっしんべん','忄','心偏']],
-  ['ひへん',['ひへん','火偏','灬']],
-  ['こざとへん',['こざとへん','阝']],
-  ['しんにょう',['しんにょう','辶','⻌','⻍']],
-  ['つちへん',['つちへん','土偏']],
-  ['やまへん',['やまへん','山偏']],
-  ['あめかんむり',['あめかんむり','雨冠']],
-  ['うかんむり',['うかんむり','宀']],
-  ['いとへん',['いとへん','糸偏','糹']],
-  ['しめすへん',['しめすへん','ネ偏','示偏']],
-  ['ころもへん',['ころもへん','衤']],
-]);
-function isBushuOK(input, target){
-  const n=(input||'').trim();
-  if(!n||!target) return false;
-  const cand = BUSHU_SYNONYM.get(target)||[target];
-  return cand.some(x=>n===x);
+// 成績履歴の表示
+function loadHist(){
+  histBody.innerHTML="";
+  const hist = JSON.parse(localStorage.getItem('shiwake_hist')||'[]');
+  hist.forEach(h=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${h.at}</td><td>${h.mode}</td><td>${h.total}</td><td>${h.ok}</td><td>${h.ng}</td><td>${h.rate}%</td><td>${h.duration}</td>`;
+    histBody.appendChild(tr);
+  });
 }
-function check(selected=null){
-  if(!cur) return; const m=els.mode.value;
-  let ok=false, corr="";
-  if(m==='yomi'){
-    corr=(cur.readings||[]).join(' / ');
-    ok=(cur.readings||[]).some(y=>normKana(els.ans.value)===normKana(y));
-  }else if(m==='okuri'){
-    corr=cur.okuri_ans; ok=(selected===cur.okuri_ans);
-  }else if(m==='bushu'){
-    corr=cur.bushu||'（未設定）'; ok=isBushuOK(els.ans.value.trim(), cur.bushu);
+loadHist();
+
+// 進捗・スコア
+function updateScore(){
+  okEl.textContent = ok; ngEl.textContent = ng;
+  const total = ok+ng;
+  rateEl.textContent = total? Math.round(ok*100/total) + "%" : "-";
+  progressEl.textContent = mode==="exam" ? `${answered}/${examTotal}` : `${total}/${total}`;
+}
+function setStatus(msg, cls){ statusEl.innerHTML = `<span class="${cls||""}">${msg}</span>`; }
+
+// タイマー
+function startTimer(mins){
+  stopTimer();
+  const end = Date.now() + mins*60*1000;
+  timerId = setInterval(()=>{
+    const rem = end - Date.now();
+    if(rem<=0){ timerEl.textContent = "00:00"; stopTimer(); finishExam(true); return; }
+    const m = Math.floor(rem/60000), s = Math.floor((rem%60000)/1000);
+    timerEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }, 200);
+}
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; }}
+
+// 問題選択（モードごとにdaily/closingを織り交ぜる）
+function pick(){
+  // 練習：完全ランダム、テスト：daily:closing=3:2 比率でサンプル
+  let candidates = pool;
+  if(mode==="exam"){
+    const r = Math.random();
+    if(r<0.6){ candidates = pool.filter(p=>p.tag==="daily"); }
+    else { candidates = pool.filter(p=>p.tag==="closing"); }
   }
-  bump(cur.__id??cur.kanji, ok);
-  if(ok){ els.fb.innerHTML=`<span class="good big">◎ 正解！</span> <span class="pill">正：${corr}</span>`; ST.r++; ST.st++; ST.td++; if(exam){ score+=5; left--; } }
-  else { els.fb.innerHTML=`<span class="bad big">× 不正解</span> <span class="pill badge">正：${corr||'—'}</span>`; ST.w++; ST.st=0; ST.td++; if(exam){ left--; } }
-  saveStats(ST); updateHUD();
-  if(exam){
-    els.stat.textContent=`検定モード：残り${left}問／得点${score}（200点満点）`;
-    if(left<=0){ exam=false; const pct=Math.round((score/200)*100); els.fb.innerHTML+=`<div class="center" style="margin-top:8px"><b>終了！</b> ${score}/200（${pct}%）</div>`; }
+  current = candidates[Math.floor(Math.random()*candidates.length)];
+  qEl.textContent = current.q;
+  debitSel.value = accounts[0].name;
+  const firstNotCash = accounts.find(a=>a.name!=="現金");
+  creditSel.value = firstNotCash ? firstNotCash.name : accounts[0].name;
+  amountInp.value = "";
+  explainBox.style.display = "none";
+  setStatus("","");
+}
+
+// 採点
+function check(){
+  if(!current){ setStatus("先にスタートしてください。","ng"); return; }
+  const d = debitSel.value; const c = creditSel.value; const a = Number(amountInp.value||0);
+  if(!a){ setStatus("金額を入力してください。","ng"); return; }
+  if(d===c){ setStatus("借方と貸方が同じ科目です。","ng"); return; }
+  const correct = (d===current.d && c===current.c && a===current.a);
+  if(correct){ ok++; setStatus("正解！","ok"); } else { ng++; setStatus("不正解。正解を確認しましょう。","ng"); }
+  answered++; updateScore(); showExplain();
+  if(mode==="exam"){ examRemaining = Math.max(0, examRemaining-1); if(examRemaining===0){ finishExam(false); } }
+}
+
+// 解説
+function showExplain(){
+  if(!current) return;
+  explainBox.style.display = "block";
+  const html = `
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
+      <div class="center"><b>借方</b></div><div></div><div class="center"><b>貸方</b></div>
+      <div class="center" style="font-size:1.05rem">${current.d}</div>
+      <div class="center">＝ <b>${Number(current.a).toLocaleString()}</b> 円 ＝</div>
+      <div class="center" style="font-size:1.05rem">${current.c}</div>
+    </div>
+    <div style="margin-top:8px">${current.exp}</div>
+    <div class="muted" style="margin-top:6px">（増減規則の確認：資産/費用→増は借方、負債/純資産/収益→増は貸方）</div>
+  `;
+  explainBody.innerHTML = html;
+}
+
+// 仕訳帳
+function recordJournal(){
+  if(!current){ setStatus("先にスタートしてください。","ng"); return; }
+  const d = debitSel.value; const c = creditSel.value; const a = Number(amountInp.value||0);
+  if(!a){ setStatus("金額を入力してください。","ng"); return; }
+  const date = new Date();
+  const y = date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), day=String(date.getDate()).padStart(2,'0');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${y}/${m}/${day}</td><td>${mode==="exam"?"本番":"練習"}</td><td>${current.q}</td><td>${d}</td><td>${a.toLocaleString()}</td><td>${c}</td><td>${a.toLocaleString()}</td>`;
+  journalBody.prepend(tr);
+  // T勘定
+  ledger[d] = ledger[d] || {debit:0, credit:0};
+  ledger[c] = ledger[c] || {debit:0, credit:0};
+  ledger[d].debit += a; ledger[c].credit += a; renderLedger();
+  setStatus("仕訳帳に記録しました。","ok");
+}
+function exportTableCSV(tableId, filename){
+  const rows = Array.from(document.querySelectorAll(`#${tableId} tr`)).map(tr=>Array.from(tr.children).map(td=>td.innerText.replaceAll(',','')));
+  const csv = rows.map(r=>r.map(x=>(/,|\"|\n/.test(x)?`"${x.replaceAll('"','""')}"`:x)).join(',')).join('\n');
+  const blob = new Blob(["\ufeff"+csv],{type:"text/csv"});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+}
+
+// T勘定描画
+function renderLedger(){
+  tBody.innerHTML="";
+  const entries = Object.entries(ledger).sort((a,b)=>a[0].localeCompare(b[0],'ja'));
+  for(const [acc, val] of entries){
+    const diff = val.debit - val.credit;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${acc}</td><td>${val.debit.toLocaleString()}</td><td>${val.credit.toLocaleString()}</td><td>${diff.toLocaleString()}</td>`;
+    tBody.appendChild(tr);
   }
 }
 
-/*** ---------- 操作 ---------- ***/
-els.next.onclick=setQuestion;
-els.submitBtn.onclick=()=>check();
-els.revealBtn.onclick=()=>{
-  if(!cur) return;
-  const m=els.mode.value;
-  if(m==='yomi'){ els.fb.innerHTML=`<span class="pill">読み：<b>${(cur.readings||[]).join(' / ')}</b></span>`; }
-  else if(m==='okuri'){ els.fb.innerHTML=`<span class="pill">正：<b>${cur.okuri_ans}</b></span>`; }
-  else if(m==='bushu'){ els.fb.innerHTML=`<span class="pill">部首：<b>${cur.bushu||'（未）'}</b></span>`; }
-};
-els.ans.addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
-els.exam.onclick=()=>{ exam=true; left=40; score=0; els.stat.textContent='検定モード開始（40問）'; setQuestion(); };
+// セッション開始（※スコアやタイマーはここで初期化）
+function start(){
+  mode = modeSel.value;
+  ok=0; ng=0; answered=0; updateScore(); setStatus("","");
 
-/*** ---------- CSV/JSONハンドラ（堅牢化版） ---------- ***/
-function parseCSV(text){
-  // 改行（CRLF/CR/LF）＆コメント(#)除去
-  const lines=text.split(/\r\n|\n|\r/).filter(x=>x.trim()!=='' && !x.trim().startsWith('#'));
-  const arr=[];
-  for(const ln of lines){
-    // TSVのみ→カンマに変換
-    const line = ln.includes('\t') && !ln.includes(',') ? ln.replace(/\t/g,',') : ln;
-    const cols=splitCSV(line);
-    // ヘッダ自動スキップ
-    if(/^type\s*$/i.test((cols[0]||'').trim())) continue;
-    const [type,kanji,readings,okuri_choices,okuri_ans,bushu,ex]=cols;
-    // readings/choices の区切り揺れを | に正規化（、／/）
-    const rnorm=(readings||'').replace(/[、／/]/g,'|');
-    const cnorm=(okuri_choices||'').replace(/[、／/]/g,'|');
-    arr.push({
-      type:(type||'').trim().toLowerCase(),
-      kanji:(kanji||'').trim(),
-      readings:rnorm.split('|').map(s=>s.trim()).filter(Boolean),
-      okuri_choices:cnorm.split('|').map(s=>s.trim()).filter(Boolean),
-      okuri_ans:(okuri_ans||'').trim(),
-      bushu:(bushu||'').trim(),
-      ex:(ex||'').trim()
-    });
+  if(mode==="exam"){
+    examTotal = Number(examCountSel.value)||40;
+    examRemaining = examTotal;
+    progressEl.textContent = `0/${examTotal}`;
+    startTime = Date.now();
+    startTimer(Number(timeLimitSel.value)||60);
+  }else{
+    examTotal = 0; examRemaining = 0; progressEl.textContent = "—";
+    stopTimer(); timerEl.textContent = "--:--";
   }
-  return arr;
+  pick(); // 最初の1問を表示
 }
-function splitCSV(line){
-  // シンプルCSV（"で囲まれたカンマと二重引用対応）
-  const out=[]; let cur=''; let q=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch==='\"'){ if(q && line[i+1]==='\"'){ cur+='\"'; i++; } else { q=!q; } }
-    else if(ch===',' && !q){ out.push(cur); cur=''; }
-    else cur+=ch;
-  }
-  out.push(cur); return out;
-}
-function summarizeLoadedData(){
-  const y=DATA.filter(d=>d.type==='yomi').length;
-  const o=DATA.filter(d=>d.type==='okuri').length;
-  const b=DATA.filter(d=>d.type==='bushu').length;
-  const bad=DATA.filter(d=>!['yomi','okuri','bushu'].includes(d.type)).slice(0,3);
-  els.log.textContent=`読込：合計${DATA.length}件（読み${y}・送り${o}・部首${b}）` +
-    (bad.length? `／不明type先頭: ${bad.map(x=>x.type||'(空)').join(', ')}`:'');
-}
-els.file.onchange=async (e)=>{
-  const f=e.target.files[0]; if(!f) return;
-  try{
-    const txt=await f.text();
-    if(f.name.endsWith('.json')){ DATA=JSON.parse(txt); }
-    else{ DATA=parseCSV(txt); }
-    // 進捗リセット
-    localStorage.removeItem(SRS_KEY); localStorage.removeItem(STATS_KEY);
-    SRS={}; ST={r:0,w:0,st:0,td:0,date:todayStr()}; saveStats(ST);
-    updateHUD(); summarizeLoadedData(); setQuestion();
-  }catch(err){ els.log.textContent='読込エラー：'+err.message; }
-};
 
-/*** ---------- util ---------- ***/
-function shuffle(a){ return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]); }
+// 次の問題（※スコア・タイマーはリセットしない）
+function nextQuestion(){
+  if(!current){ setStatus("先にスタートしてください。","ng"); return; }
+  pick();
+}
 
-/*** ---------- 内蔵スターターパック（最小・動作確認用） ---------- ***/
-let DATA = [
-  // 読み（サンプル）
-  {type:"yomi", kanji:"安全", readings:["あんぜん"]},
-  {type:"yomi", kanji:"影響", readings:["えいきょう"]},
-  {type:"yomi", kanji:"家族", readings:["かぞく"]},
-  {type:"yomi", kanji:"経済", readings:["けいざい"]},
-  // 送り仮名（サンプル）
-  {type:"okuri", kanji:"受け", okuri_choices:["受け入れ","受入れ","受入"], okuri_ans:"受け入れ"},
-  {type:"okuri", kanji:"申し", okuri_choices:["申し込む","申込む"], okuri_ans:"申し込む"},
-  // 部首（サンプル）
-  {type:"bushu", kanji:"海", bushu:"さんずい"},
-  {type:"bushu", kanji:"体", bushu:"にんべん"},
-];
-updateHUD(); setQuestion();
+// 終了
+function finishExam(timeup){
+  stopTimer();
+  const duration = startTime? Math.round((Date.now()-startTime)/1000) : 0;
+  const mins = Math.floor(duration/60), secs = duration%60;
+  const rate = (ok+ng)? Math.round(ok*100/(ok+ng)) : 0;
+  // 履歴保存
+  const hist = JSON.parse(localStorage.getItem('shiwake_hist')||'[]');
+  hist.unshift({
+    at: new Date().toLocaleString(),
+    mode: mode==="exam" ? (timeup? "本番（時間切れ）" : "本番") : "練習",
+    total: mode==="exam" ? examTotal : (ok+ng),
+    ok, ng, rate,
+    duration: mode==="exam" ? `${mins}分${secs}秒` : "-"
+  });
+  localStorage.setItem('shiwake_hist', JSON.stringify(hist));
+  loadHist();
+  setStatus(`終了：正解 ${ok} / ${ok+ng}（正答率 ${rate}%）` + (timeup? "｜時間切れ":""), timeup? "ng":"ok");
+}
+
+// UIイベント
+document.getElementById('startBtn').addEventListener('click', start);
+document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+document.getElementById('checkBtn').addEventListener('click', check);
+document.getElementById('showBtn').addEventListener('click', showExplain);
+document.getElementById('recordBtn').addEventListener('click', recordJournal);
+document.getElementById('finishBtn').addEventListener('click', ()=>{ if(mode==="exam") finishExam(false); else setStatus("練習モードは随時終了できます。",""); });
+document.getElementById('resetBtn').addEventListener('click', ()=>{ ok=0; ng=0; updateScore(); setStatus("スコアをリセットしました。",""); });
+document.getElementById('exportJournal').addEventListener('click', ()=>exportTableCSV('journalTable','journal.csv'));
+document.getElementById('exportHist').addEventListener('click', ()=>exportTableCSV('histTable','history.csv'));
+document.getElementById('clearHist').addEventListener('click', ()=>{ localStorage.removeItem('shiwake_hist'); loadHist(); });
+
+// チートシート描画
+(function(){
+  const tbody = document.getElementById('cheats');
+  cheatRows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="muted">${r[3]}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// 初期表示（未スタート時はダミー表示）
+pick();
+updateScore();
+renderLedger();
 </script>
 </body>
 </html>
